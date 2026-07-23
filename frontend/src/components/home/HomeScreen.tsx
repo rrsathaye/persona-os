@@ -6,12 +6,69 @@ import NewWritingCard from "@/components/home/NewWritingCard";
 import FadeIn from "../common/FadeIn";
 import { useState } from "react";
 import WritingTypeScreen from "@/components/writing/WritingTypeScreen";
+import ContextScreen from "@/components/writing/ContextScreen";
+import type { WritingType } from "@/types/writing";
+import CommunicationMixScreen from "@/components/writing/CommunicationMixScreen";
+import DraftScreen from "@/components/writing/DraftScreen";
+
 
 export default function HomeScreen() {
   const [showWritingType, setShowWritingType] = useState(false);
-   
-    if (showWritingType) {
-  return <WritingTypeScreen />;
+const [showContext, setShowContext] = useState(false);
+const [showCommunicationMix, setShowCommunicationMix] = useState(false);
+const [showDraft, setShowDraft] = useState(false);
+const [writingType, setWritingType] = useState<WritingType | null>(null);
+
+if (showDraft) {
+  return (
+    <DraftScreen
+      onBack={() => {
+        setShowDraft(false);
+        setShowCommunicationMix(true);
+      }}
+    />
+  );
+}
+if (showCommunicationMix) {
+  return (
+   <CommunicationMixScreen
+  onBack={() => {
+    setShowCommunicationMix(false);
+    setShowContext(true);
+  }}
+  onGenerate={() => {
+    setShowCommunicationMix(false);
+    setShowDraft(true);
+  }}
+/>
+  );
+}
+if (showContext) {
+  return (
+  <ContextScreen
+  writingType={writingType!}
+  onBack={() => {
+    setShowContext(false);
+    setShowWritingType(true);
+  }}
+  onContinue={() => {
+    setShowContext(false);
+    setShowCommunicationMix(true);
+  }}
+/>
+  );
+}
+if (showWritingType) {
+  return (
+    <WritingTypeScreen
+      onBack={() => setShowWritingType(false)}
+      onSelect={(type) => {
+        setWritingType(type);
+        setShowWritingType(false);
+        setShowContext(true);
+      }}
+    />
+  );
 }
   return (
     <AppShell>

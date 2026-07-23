@@ -1,0 +1,1 @@
+export type WritingType = "comment" | "reply" | "post";
