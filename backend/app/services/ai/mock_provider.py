@@ -1,6 +1,11 @@
+
+import time
+
 class MockProvider:
 
     def generate(self, prompt: str) -> str:
+
+        time.sleep(2)
 
         return (
             "I don't think AI will replace Product Managers. "

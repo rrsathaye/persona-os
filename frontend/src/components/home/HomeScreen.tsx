@@ -21,7 +21,7 @@ const [showDraft, setShowDraft] = useState(false);
 const [writingType, setWritingType] = useState<WritingType | null>(null);
 
 const [context, setContext] = useState("");
-
+const [isGenerating, setIsGenerating] = useState(false);
 const [communicationMix, setCommunicationMix] = useState({
   professional: 50,
   friendly: 50,
@@ -45,12 +45,15 @@ if (showDraft) {
 if (showCommunicationMix) {
   return (
 <CommunicationMixScreen
+ isGenerating={isGenerating}
   onBack={() => {
     setShowCommunicationMix(false);
     setShowContext(true);
   }}
 onGenerate={async (mix) => {
   try {
+    setIsGenerating(true);
+
     setCommunicationMix(mix);
 
     const generatedDraft = await generateDraft({
@@ -66,6 +69,8 @@ onGenerate={async (mix) => {
   } catch (error) {
     console.error(error);
     alert("Failed to generate draft.");
+  } finally {
+    setIsGenerating(false);
   }
 }}
 />

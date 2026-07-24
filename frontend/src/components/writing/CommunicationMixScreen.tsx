@@ -13,11 +13,13 @@ type CommunicationMix = {
 type CommunicationMixScreenProps = {
   onBack: () => void;
   onGenerate: (mix: CommunicationMix) => void;
+  isGenerating: boolean;
 };
 
 export default function CommunicationMixScreen({
   onBack,
   onGenerate,
+   isGenerating,
 }: CommunicationMixScreenProps) {
   const [mix, setMix] = useState<CommunicationMix>({
     professional: 50,
@@ -163,11 +165,12 @@ export default function CommunicationMixScreen({
 
         <div className="mt-10 flex justify-end">
           <button
-            onClick={() => onGenerate(mix)}
-            className="rounded-xl bg-white px-6 py-3 font-medium text-black transition hover:opacity-90"
-          >
-            Generate Draft →
-          </button>
+  disabled={isGenerating}
+  onClick={() => onGenerate(mix)}
+  className="rounded-xl bg-white px-6 py-3 font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  {isGenerating ? "Generating..." : "Generate Draft →"}
+</button>
         </div>
       </div>
     </AppShell>
