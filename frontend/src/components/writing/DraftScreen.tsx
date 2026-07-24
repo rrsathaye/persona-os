@@ -2,10 +2,12 @@ import AppShell from "@/components/common/AppShell";
 import PageHeader from "@/components/common/PageHeader";
 
 type DraftScreenProps = {
+  draft: string;
   onBack: () => void;
 };
 
 export default function DraftScreen({
+    draft,
   onBack,
 }: DraftScreenProps) {
   return (
@@ -25,19 +27,8 @@ export default function DraftScreen({
 
         <div className="mt-10 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
           <p className="whitespace-pre-line leading-8 text-zinc-200">
-{`Hi John,
-
-Thank you for sharing the details.
-
-I appreciate the context you've provided. Based on what you've shared, I think we should schedule a quick discussion to align on the next steps before moving forward.
-
-Please let me know a suitable time and I'll be happy to connect.
-
-Looking forward to hearing from you.
-
-Best,
-Rahul`}
-          </p>
+  {draft}
+</p>
         </div>
 
         <div className="mt-8 flex justify-end gap-4">

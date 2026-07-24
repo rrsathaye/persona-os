@@ -1,3 +1,4 @@
+import { useState } from "react";
 import AppShell from "@/components/common/AppShell";
 import PageHeader from "@/components/common/PageHeader";
 
@@ -5,7 +6,7 @@ import type { WritingType } from "@/types/writing";
 
 type ContextScreenProps = {
   onBack: () => void;
-  onContinue: () => void;
+  onContinue: (context: string) => void;
   writingType: WritingType;
 };
 const content = {
@@ -40,6 +41,7 @@ export default function ContextScreen({
   writingType,
 }: ContextScreenProps) {
     const screen = content[writingType];
+    const [context, setContext] = useState("");
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-3xl">
@@ -55,14 +57,16 @@ export default function ContextScreen({
   subtitle={screen.subtitle}
 />
 
-        <textarea
-          placeholder={screen.placeholder}
-          className="mt-10 h-72 w-full rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-white outline-none transition focus:border-zinc-600"
-        />
+      <textarea
+  value={context}
+  onChange={(e) => setContext(e.target.value)}
+  placeholder={screen.placeholder}
+  className="mt-10 h-72 w-full rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-white outline-none transition focus:border-zinc-600"
+/>
 
         <div className="mt-8 flex justify-end">
          <button
-  onClick={onContinue}
+ onClick={() => onContinue(context)}
   className="rounded-xl bg-white px-6 py-3 font-medium text-black transition hover:opacity-90"
 >   Continue →
             

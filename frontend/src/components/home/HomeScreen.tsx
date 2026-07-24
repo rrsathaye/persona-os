@@ -10,6 +10,7 @@ import ContextScreen from "@/components/writing/ContextScreen";
 import type { WritingType } from "@/types/writing";
 import CommunicationMixScreen from "@/components/writing/CommunicationMixScreen";
 import DraftScreen from "@/components/writing/DraftScreen";
+import { generateDraft } from "@/services/ai";
 
 
 export default function HomeScreen() {
@@ -19,9 +20,21 @@ const [showCommunicationMix, setShowCommunicationMix] = useState(false);
 const [showDraft, setShowDraft] = useState(false);
 const [writingType, setWritingType] = useState<WritingType | null>(null);
 
+const [context, setContext] = useState("");
+
+const [communicationMix, setCommunicationMix] = useState({
+  professional: 50,
+  friendly: 50,
+  concise: 50,
+  expressive: 50,
+});
+
+const [draft, setDraft] = useState("");
+
 if (showDraft) {
   return (
     <DraftScreen
+    draft={draft}
       onBack={() => {
         setShowDraft(false);
         setShowCommunicationMix(true);
@@ -31,15 +44,30 @@ if (showDraft) {
 }
 if (showCommunicationMix) {
   return (
-   <CommunicationMixScreen
+<CommunicationMixScreen
   onBack={() => {
     setShowCommunicationMix(false);
     setShowContext(true);
   }}
-  onGenerate={() => {
+onGenerate={async (mix) => {
+  try {
+    setCommunicationMix(mix);
+
+    const generatedDraft = await generateDraft({
+      writing_type: writingType!,
+      context,
+      communication_mix: mix,
+    });
+
+    setDraft(generatedDraft);
+
     setShowCommunicationMix(false);
     setShowDraft(true);
-  }}
+  } catch (error) {
+    console.error(error);
+    alert("Failed to generate draft.");
+  }
+}}
 />
   );
 }
@@ -51,10 +79,11 @@ if (showContext) {
     setShowContext(false);
     setShowWritingType(true);
   }}
-  onContinue={() => {
-    setShowContext(false);
-    setShowCommunicationMix(true);
-  }}
+onContinue={(context) => {
+  setContext(context);
+  setShowContext(false);
+  setShowCommunicationMix(true);
+}}
 />
   );
 }

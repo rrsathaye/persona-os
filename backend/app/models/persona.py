@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String
 
-from backend.app.database import Base
+from app.database import Base
 
 
 class Persona(Base):
