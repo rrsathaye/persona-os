@@ -1,14 +1,11 @@
+import type { CommunicationStyle } from "@/types/communication";
+
 const API_BASE_URL = "http://127.0.0.1:8000";
 
 export type GenerateDraftRequest = {
   writing_type: string;
   context: string;
-  communication_mix: {
-    professional: number;
-    friendly: number;
-    concise: number;
-    expressive: number;
-  };
+  communication_style: CommunicationStyle;
 };
 
 export async function generateDraft(

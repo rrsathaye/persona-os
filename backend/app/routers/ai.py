@@ -26,7 +26,7 @@ def generate(
     draft = ai_service.generate_draft(
         writing_type=request.writing_type,
         context=request.context,
-        communication_mix=request.communication_mix,
+        communication_style=request.communication_style,
     )
 
     return GenerateDraftResponse(

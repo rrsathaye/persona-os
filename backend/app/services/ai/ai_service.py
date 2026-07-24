@@ -11,13 +11,19 @@ class AIService:
         self,
         writing_type: str,
         context: str,
-        communication_mix: dict,
+        communication_style: dict,
     ) -> str:
 
         prompt = PromptBuilder.build(
             writing_type=writing_type,
             context=context,
-            communication_mix=communication_mix,
+            communication_style=communication_style,
         )
+
+        print("\n" + "=" * 80)
+        print("PROMPT SENT TO AI")
+        print("=" * 80)
+        print(prompt)
+        print("=" * 80 + "\n")
 
         return self.provider.generate(prompt)
