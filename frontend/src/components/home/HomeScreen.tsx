@@ -16,8 +16,8 @@ import DraftScreen from "@/components/writing/DraftScreen";
 
 import { generateDraft } from "@/services/ai";
 
-import type { WritingType } from "@/types/writing";
-import type { CommunicationStyle } from "@/types/communication";
+
+import type { WritingSession } from "@/types/writingSession";
 
 type Screen =
   | "home"
@@ -30,42 +30,45 @@ export default function HomeScreen() {
   const [currentScreen, setCurrentScreen] =
     useState<Screen>("home");
 
-  const [writingType, setWritingType] =
-    useState<WritingType | null>(null);
+  
 
-  const [context, setContext] = useState("");
-  const [draft, setDraft] = useState("");
+  
+  
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const [communicationStyle, setCommunicationStyle] =
-    useState<CommunicationStyle>({
-      dimensions: [
-        {
-          id: "professionalism",
-          leftLabel: "Professional",
-          rightLabel: "Casual",
-          balance: 20,
-        },
-        {
-          id: "tone",
-          leftLabel: "Formal",
-          rightLabel: "Friendly",
-          balance: 70,
-        },
-        {
-          id: "length",
-          leftLabel: "Concise",
-          rightLabel: "Detailed",
-          balance: 40,
-        },
-        {
-          id: "style",
-          leftLabel: "Reserved",
-          rightLabel: "Expressive",
-          balance: 75,
-        },
-      ],
-    });
+  const [session, setSession] = useState<WritingSession>({
+  writingType: null,
+  context: "",
+  draft: "",
+  communicationStyle: {
+    dimensions: [
+      {
+        id: "professionalism",
+        leftLabel: "Professional",
+        rightLabel: "Casual",
+        balance: 20,
+      },
+      {
+        id: "tone",
+        leftLabel: "Formal",
+        rightLabel: "Friendly",
+        balance: 70,
+      },
+      {
+        id: "length",
+        leftLabel: "Concise",
+        rightLabel: "Detailed",
+        balance: 40,
+      },
+      {
+        id: "style",
+        leftLabel: "Reserved",
+        rightLabel: "Expressive",
+        balance: 75,
+      },
+    ],
+  },
+});
 
   switch (currentScreen) {
     case "writingType":
@@ -73,7 +76,10 @@ export default function HomeScreen() {
         <WritingTypeScreen
           onBack={() => setCurrentScreen("home")}
           onSelect={(type) => {
-            setWritingType(type);
+            setSession((prev) => ({
+  ...prev,
+  writingType: type,
+}));
             setCurrentScreen("context");
           }}
         />
@@ -82,11 +88,14 @@ export default function HomeScreen() {
     case "context":
       return (
         <ContextScreen
-  writingType={writingType!}
-  context={context}
+  writingType={session.writingType!}
+  context={session.context}
           onBack={() => setCurrentScreen("writingType")}
           onContinue={(newContext) => {
-            setContext(newContext);
+            setSession((prev) => ({
+  ...prev,
+  context: newContext,
+}));
             setCurrentScreen("communicationStyle");
           }}
         />
@@ -95,22 +104,28 @@ export default function HomeScreen() {
     case "communicationStyle":
       return (
         <CommunicationStyleScreen
-          communicationStyle={communicationStyle}
+          communicationStyle={session.communicationStyle}
           isGenerating={isGenerating}
           onBack={() => setCurrentScreen("context")}
           onGenerate={async (style) => {
             try {
               setIsGenerating(true);
 
-              setCommunicationStyle(style);
+              setSession((prev) => ({
+  ...prev,
+  communicationStyle: style,
+}));
 
               const generatedDraft = await generateDraft({
-                writing_type: writingType!,
-                context,
+                writing_type: session.writingType!,
+                context: session.context,
                 communication_style: style,
               });
 
-              setDraft(generatedDraft);
+              setSession((prev) => ({
+  ...prev,
+  draft: generatedDraft,
+}));
               setCurrentScreen("draft");
             } catch (error) {
               console.error(error);
@@ -125,7 +140,7 @@ export default function HomeScreen() {
     case "draft":
       return (
         <DraftScreen
-          draft={draft}
+          draft={session.draft}
           onBack={() => setCurrentScreen("communicationStyle")}
           onRefine={() => setCurrentScreen("context")}
         />
