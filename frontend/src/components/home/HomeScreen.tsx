@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { createDefaultWritingSession } from "@/constants/defaultWritingSession";
 import AppShell from "@/components/common/AppShell";
 import FadeIn from "@/components/common/FadeIn";
 import PageHeader from "@/components/common/PageHeader";
@@ -17,7 +17,7 @@ import DraftScreen from "@/components/writing/DraftScreen";
 import { generateDraft } from "@/services/ai";
 
 
-import type { WritingSession } from "@/types/writingSession";
+
 
 type Screen =
   | "home"
@@ -36,39 +36,7 @@ export default function HomeScreen() {
   
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const [session, setSession] = useState<WritingSession>({
-  writingType: null,
-  context: "",
-  draft: "",
-  communicationStyle: {
-    dimensions: [
-      {
-        id: "professionalism",
-        leftLabel: "Professional",
-        rightLabel: "Casual",
-        balance: 20,
-      },
-      {
-        id: "tone",
-        leftLabel: "Formal",
-        rightLabel: "Friendly",
-        balance: 70,
-      },
-      {
-        id: "length",
-        leftLabel: "Concise",
-        rightLabel: "Detailed",
-        balance: 40,
-      },
-      {
-        id: "style",
-        leftLabel: "Reserved",
-        rightLabel: "Expressive",
-        balance: 75,
-      },
-    ],
-  },
-});
+ const [session, setSession] = useState(createDefaultWritingSession);
 
   switch (currentScreen) {
     case "writingType":
