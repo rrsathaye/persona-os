@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createDefaultWritingSession } from "@/constants/defaultWritingSession";
+import { useWritingSession } from "@/hooks/useWritingSession";
 import AppShell from "@/components/common/AppShell";
 import FadeIn from "@/components/common/FadeIn";
 import PageHeader from "@/components/common/PageHeader";
@@ -35,8 +35,13 @@ export default function HomeScreen() {
   
   
   const [isGenerating, setIsGenerating] = useState(false);
-
- const [session, setSession] = useState(createDefaultWritingSession);
+const {
+  session,
+  setWritingType,
+  setContext,
+  setCommunicationStyle,
+  setDraft,
+} = useWritingSession();
 
   switch (currentScreen) {
     case "writingType":
@@ -44,10 +49,7 @@ export default function HomeScreen() {
         <WritingTypeScreen
           onBack={() => setCurrentScreen("home")}
           onSelect={(type) => {
-            setSession((prev) => ({
-  ...prev,
-  writingType: type,
-}));
+           setWritingType(type);
             setCurrentScreen("context");
           }}
         />
@@ -60,10 +62,7 @@ export default function HomeScreen() {
   context={session.context}
           onBack={() => setCurrentScreen("writingType")}
           onContinue={(newContext) => {
-            setSession((prev) => ({
-  ...prev,
-  context: newContext,
-}));
+            setContext(newContext);
             setCurrentScreen("communicationStyle");
           }}
         />
@@ -79,10 +78,7 @@ export default function HomeScreen() {
             try {
               setIsGenerating(true);
 
-              setSession((prev) => ({
-  ...prev,
-  communicationStyle: style,
-}));
+              setCommunicationStyle(style);
 
               const generatedDraft = await generateDraft({
                 writing_type: session.writingType!,
@@ -90,10 +86,7 @@ export default function HomeScreen() {
                 communication_style: style,
               });
 
-              setSession((prev) => ({
-  ...prev,
-  draft: generatedDraft,
-}));
+              setDraft(generatedDraft);
               setCurrentScreen("draft");
             } catch (error) {
               console.error(error);
