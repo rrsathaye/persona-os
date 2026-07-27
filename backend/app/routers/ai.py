@@ -23,11 +23,7 @@ def generate(
     request: GenerateDraftRequest,
 ):
 
-    draft = ai_service.generate_draft(
-        writing_type=request.writing_type,
-        context=request.context,
-        communication_style=request.communication_style,
-    )
+    draft = ai_service.generate_draft(request)
 
     return GenerateDraftResponse(
         draft=draft,
