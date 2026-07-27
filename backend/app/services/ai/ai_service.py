@@ -23,7 +23,7 @@ class AIService:
         print("\n" + "=" * 80)
         print("PROMPT SENT TO AI")
         print("=" * 80)
-        print(prompt)
+        
         print("=" * 80 + "\n")
 
         return self.provider.generate(prompt)
