@@ -11,7 +11,7 @@ import NewWritingCard from "@/components/home/NewWritingCard";
 
 import WritingTypeScreen from "@/components/writing/WritingTypeScreen";
 import ContextScreen from "@/components/writing/ContextScreen";
-import CommunicationMixScreen from "@/components/writing/CommunicationStyleScreen";
+import CommunicationStyleScreen from "@/components/writing/CommunicationStyleScreen";
 import DraftScreen from "@/components/writing/DraftScreen";
 
 import { generateDraft } from "@/services/ai";
@@ -19,13 +19,20 @@ import { generateDraft } from "@/services/ai";
 import type { WritingType } from "@/types/writing";
 import type { CommunicationStyle } from "@/types/communication";
 
-export default function HomeScreen() {
-  const [showWritingType, setShowWritingType] = useState(false);
-  const [showContext, setShowContext] = useState(false);
-  const [showCommunicationMix, setShowCommunicationMix] = useState(false);
-  const [showDraft, setShowDraft] = useState(false);
+type Screen =
+  | "home"
+  | "writingType"
+  | "context"
+  | "communicationStyle"
+  | "draft";
 
-  const [writingType, setWritingType] = useState<WritingType | null>(null);
+export default function HomeScreen() {
+  const [currentScreen, setCurrentScreen] =
+    useState<Screen>("home");
+
+  const [writingType, setWritingType] =
+    useState<WritingType | null>(null);
+
   const [context, setContext] = useState("");
   const [draft, setDraft] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -60,121 +67,112 @@ export default function HomeScreen() {
       ],
     });
 
-  if (showDraft) {
-    return (
-      <DraftScreen
-        draft={draft}
-        onBack={() => {
-          setShowDraft(false);
-          setShowCommunicationMix(true);
-        }}
-      />
-    );
-  }
+  switch (currentScreen) {
+    case "writingType":
+      return (
+        <WritingTypeScreen
+          onBack={() => setCurrentScreen("home")}
+          onSelect={(type) => {
+            setWritingType(type);
+            setCurrentScreen("context");
+          }}
+        />
+      );
 
-  if (showCommunicationMix) {
-    return (
-      <CommunicationMixScreen
-        communicationStyle={communicationStyle}
-        isGenerating={isGenerating}
-        onBack={() => {
-          setShowCommunicationMix(false);
-          setShowContext(true);
-        }}
-        onGenerate={async (style) => {
-          try {
-            setIsGenerating(true);
+    case "context":
+      return (
+        <ContextScreen
+  writingType={writingType!}
+  context={context}
+          onBack={() => setCurrentScreen("writingType")}
+          onContinue={(newContext) => {
+            setContext(newContext);
+            setCurrentScreen("communicationStyle");
+          }}
+        />
+      );
 
-            setCommunicationStyle(style);
+    case "communicationStyle":
+      return (
+        <CommunicationStyleScreen
+          communicationStyle={communicationStyle}
+          isGenerating={isGenerating}
+          onBack={() => setCurrentScreen("context")}
+          onGenerate={async (style) => {
+            try {
+              setIsGenerating(true);
 
-            const generatedDraft = await generateDraft({
-              writing_type: writingType!,
-              context,
-              communication_style: style,
-            });
+              setCommunicationStyle(style);
 
-            setDraft(generatedDraft);
+              const generatedDraft = await generateDraft({
+                writing_type: writingType!,
+                context,
+                communication_style: style,
+              });
 
-            setShowCommunicationMix(false);
-            setShowDraft(true);
-          } catch (error) {
-            console.error(error);
-            alert("Failed to generate draft.");
-          } finally {
-            setIsGenerating(false);
-          }
-        }}
-      />
-    );
-  }
+              setDraft(generatedDraft);
+              setCurrentScreen("draft");
+            } catch (error) {
+              console.error(error);
+              alert("Failed to generate draft.");
+            } finally {
+              setIsGenerating(false);
+            }
+          }}
+        />
+      );
 
-  if (showContext) {
-    return (
-      <ContextScreen
-        writingType={writingType!}
-        onBack={() => {
-          setShowContext(false);
-          setShowWritingType(true);
-        }}
-        onContinue={(context) => {
-          setContext(context);
-          setShowContext(false);
-          setShowCommunicationMix(true);
-        }}
-      />
-    );
-  }
+    case "draft":
+      return (
+        <DraftScreen
+          draft={draft}
+          onBack={() => setCurrentScreen("communicationStyle")}
+          onRefine={() => setCurrentScreen("context")}
+        />
+      );
 
-  if (showWritingType) {
-    return (
-      <WritingTypeScreen
-        onBack={() => setShowWritingType(false)}
-        onSelect={(type) => {
-          setWritingType(type);
-          setShowWritingType(false);
-          setShowContext(true);
-        }}
-      />
-    );
-  }
-
-  return (
-    <AppShell>
-      <FadeIn>
-        <div className="mx-auto w-full max-w-3xl">
-          <PageHeader
-            title="PersonaOS"
-            subtitle="AI that helps you communicate—without losing your voice."
-          />
-
-          <section className="mt-16">
-            <h2 className="mb-6 text-xl font-semibold">
-              Continue where you left off
-            </h2>
-
-            <div className="space-y-4">
-              <SessionCard
-                title="LinkedIn Comment"
-                lastEdited="2 minutes ago"
+    case "home":
+    default:
+      return (
+        <AppShell>
+          <FadeIn>
+            <div className="mx-auto w-full max-w-3xl">
+              <PageHeader
+                title="PersonaOS"
+                subtitle="AI that helps you communicate—without losing your voice."
               />
 
-              <SessionCard
-                title="Vendor Email"
-                lastEdited="Yesterday"
-              />
+              <section className="mt-16">
+                <h2 className="mb-6 text-xl font-semibold">
+                  Continue where you left off
+                </h2>
 
-              <SessionCard
-                title="Reddit Post"
-                lastEdited="2 days ago"
-              />
+                <div className="space-y-4">
+                  <SessionCard
+                    title="LinkedIn Comment"
+                    lastEdited="2 minutes ago"
+                  />
 
-              <NewWritingCard
-                onClick={() => setShowWritingType(true)}
-              />
+                  <SessionCard
+                    title="Vendor Email"
+                    lastEdited="Yesterday"
+                  />
+
+                  <SessionCard
+                    title="Reddit Post"
+                    lastEdited="2 days ago"
+                  />
+
+                  <NewWritingCard
+                    onClick={() =>
+                      setCurrentScreen("writingType")
+                    }
+                  />
+                </div>
+              </section>
             </div>
-          </section>
-        </div>
-      </FadeIn>
-    </AppShell>
-  );
+          </FadeIn>
+        </AppShell>
+      );
+  }
 }

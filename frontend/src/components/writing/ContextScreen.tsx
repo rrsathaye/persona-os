@@ -1,14 +1,17 @@
 import { useState } from "react";
+
 import AppShell from "@/components/common/AppShell";
 import PageHeader from "@/components/common/PageHeader";
 
 import type { WritingType } from "@/types/writing";
 
 type ContextScreenProps = {
+  writingType: WritingType;
+  context: string;
   onBack: () => void;
   onContinue: (context: string) => void;
-  writingType: WritingType;
 };
+
 const content = {
   comment: {
     title: "What are we responding to?",
@@ -33,15 +36,16 @@ const content = {
   },
 } as const;
 
-
-
 export default function ContextScreen({
+  writingType,
+  context,
   onBack,
   onContinue,
-  writingType,
 }: ContextScreenProps) {
-    const screen = content[writingType];
-    const [context, setContext] = useState("");
+  const screen = content[writingType];
+
+  const [draftContext, setDraftContext] = useState(context);
+
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-3xl">
@@ -52,24 +56,24 @@ export default function ContextScreen({
           ← Back
         </button>
 
-      <PageHeader
-  title={screen.title}
-  subtitle={screen.subtitle}
-/>
+        <PageHeader
+          title={screen.title}
+          subtitle={screen.subtitle}
+        />
 
-      <textarea
-  value={context}
-  onChange={(e) => setContext(e.target.value)}
-  placeholder={screen.placeholder}
-  className="mt-10 h-72 w-full rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-white outline-none transition focus:border-zinc-600"
-/>
+        <textarea
+          value={draftContext}
+          onChange={(e) => setDraftContext(e.target.value)}
+          placeholder={screen.placeholder}
+          className="mt-10 h-72 w-full rounded-2xl border border-zinc-800 bg-zinc-900 p-5 text-white outline-none transition focus:border-zinc-600"
+        />
 
         <div className="mt-8 flex justify-end">
-         <button
- onClick={() => onContinue(context)}
-  className="rounded-xl bg-white px-6 py-3 font-medium text-black transition hover:opacity-90"
->   Continue →
-            
+          <button
+            onClick={() => onContinue(draftContext)}
+            className="rounded-xl bg-white px-6 py-3 font-medium text-black transition hover:opacity-90"
+          >
+            Continue →
           </button>
         </div>
       </div>

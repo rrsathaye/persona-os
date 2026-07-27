@@ -8,19 +8,19 @@ import CommunicationSlider from "@/components/common/CommunicationSlider";
 
 import type { CommunicationStyle } from "@/types/communication";
 
-type CommunicationMixScreenProps = {
+type CommunicationStyleScreenProps = {
   communicationStyle: CommunicationStyle;
   isGenerating: boolean;
   onBack: () => void;
   onGenerate: (style: CommunicationStyle) => void;
 };
 
-export default function CommunicationMixScreen({
+export default function CommunicationStyleScreen({
   communicationStyle,
   isGenerating,
   onBack,
   onGenerate,
-}: CommunicationMixScreenProps) {
+}: CommunicationStyleScreenProps) {
   const [style, setStyle] = useState(communicationStyle);
 
   const updateBalance = (id: string, balance: number) => {
@@ -38,11 +38,18 @@ export default function CommunicationMixScreen({
     <AppShell>
       <div className="mx-auto w-full max-w-3xl">
         <PageHeader
-          title="Communication Style"
-          subtitle="Adjust how PersonaOS should communicate."
+          title="Adjust Communication Style"
+          subtitle="Give PersonaOS a starting point."
         />
 
-        <div className="mt-10 space-y-8">
+        <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+          <p className="text-sm text-zinc-400">
+            As you review and edit drafts, PersonaOS will learn your
+            communication style and continuously improve future drafts.
+          </p>
+        </div>
+
+        <div className="mt-8 space-y-6">
           {style.dimensions.map((dimension) => (
             <CommunicationSlider
               key={dimension.id}
@@ -56,7 +63,7 @@ export default function CommunicationMixScreen({
           ))}
         </div>
 
-        <div className="mt-12 flex justify-between">
+        <div className="mt-12 flex justify-end gap-3">
           <button
             onClick={onBack}
             className="rounded-lg border border-zinc-700 px-5 py-2 hover:bg-zinc-900"
@@ -69,7 +76,7 @@ export default function CommunicationMixScreen({
             onClick={() => onGenerate(style)}
             className="rounded-lg bg-white px-5 py-2 text-black disabled:opacity-50"
           >
-            {isGenerating ? "Generating..." : "Generate Draft"}
+            {isGenerating ? "Generating Draft..." : "Continue"}
           </button>
         </div>
       </div>
