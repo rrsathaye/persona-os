@@ -1,12 +1,13 @@
 import type { CommunicationStyle } from "@/types/communication";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
 
-export type GenerateDraftRequest = {
-  writing_type: string;
-  context: string;
+export interface GenerateDraftRequest {
+  persona_id: string;
+  intent: string;
   communication_style: CommunicationStyle;
-};
+  screen_snapshot: unknown;
+}
 
 export async function generateDraft(
   request: GenerateDraftRequest
@@ -20,7 +21,8 @@ export async function generateDraft(
   });
 
   if (!response.ok) {
-    throw new Error("Failed to generate draft");
+    const detail = await response.text();
+    throw new Error(detail || "Failed to generate draft");
   }
 
   const data = await response.json();

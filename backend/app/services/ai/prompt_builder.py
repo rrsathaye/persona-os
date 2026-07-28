@@ -42,10 +42,11 @@ class PromptBuilder:
                 ).strip()
             )
 
-        elements_section = (
-            "\n\n".join(elements)
-            if elements
-            else "No UI elements captured."
+        elements_section = "\n\n".join(elements) if elements else "No UI elements captured."
+        comments_section = (
+            "\n".join(f"- {comment}" for comment in snapshot.visible_comments)
+            if snapshot.visible_comments
+            else "No comments were captured."
         )
 
         return dedent(
@@ -69,6 +70,18 @@ class PromptBuilder:
 
             Screen Title:
             {snapshot.title or ""}
+
+            Subreddit:
+            {snapshot.subreddit or ""}
+
+            Post Author:
+            {snapshot.author or ""}
+
+            Post Body:
+            {snapshot.body or ""}
+
+            Visible Comments:
+            {comments_section}
 
             Visible Screen Elements:
             {elements_section}
