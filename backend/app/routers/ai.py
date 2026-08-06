@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from app.schemas.ai import (
     GenerateDraftRequest,
@@ -6,6 +6,7 @@ from app.schemas.ai import (
 )
 
 from app.services.ai.ai_service import AIService
+from app.personas import PersonaNotFoundError
 
 router = APIRouter(
     prefix="/ai",
@@ -23,7 +24,13 @@ def generate(
     request: GenerateDraftRequest,
 ):
 
-    draft = ai_service.generate_draft(request)
+    try:
+        draft = ai_service.generate_draft(request)
+    except PersonaNotFoundError as error:
+        raise HTTPException(
+            status_code=400,
+            detail=str(error),
+        ) from error
 
     return GenerateDraftResponse(
         draft=draft,
